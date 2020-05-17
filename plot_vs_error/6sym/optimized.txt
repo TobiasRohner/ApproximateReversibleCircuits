@@ -1,0 +1,19 @@
+7 18
+X      2
+Id     0
+X      0
+X      1
+cSwap  1  0  5
+Id     6
+Id     5
+cX     2  5
+X      6
+cSwap  1  0  6
+ccX    4  0  1
+ccX    4  2  0
+Swap   1  4
+X      5
+cX     0  1
+ccX    6  5  1
+cSwap  5  0  2
+ccX    6  5  1

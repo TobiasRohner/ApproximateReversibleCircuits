@@ -1,0 +1,11 @@
+6 10
+Id     3
+Id     3
+cX     3  2
+cSwap  0  3  1
+cX     4  0
+ccX    1  3  4
+Swap   4  0
+cSwap  1  5  0
+Id     0
+X      1
