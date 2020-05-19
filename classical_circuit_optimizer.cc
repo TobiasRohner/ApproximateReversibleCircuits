@@ -76,7 +76,6 @@ int main(int argc, char *argv[]) {
 
     std::ofstream output_file;
     output_file.open(vm["output"].as<std::string>());
-    Circuit<Reg_t> best;
     for (unsigned d = d_min ; d <= d_max ; d += d_inc) {
 	std::vector<Circuit<Reg_t>> best_per_optim(optimizations_per_circuit);
 	std::vector<std::tuple<double, double, double>> e_per_optim(optimizations_per_circuit);
@@ -116,6 +115,7 @@ int main(int argc, char *argv[]) {
 	    }
 	    #undef DO_OPTIMIZATION
 	}
+	Circuit<Reg_t> best;
 	double best_e = 1;
 	double best_fn;
 	double best_fp;
@@ -128,6 +128,7 @@ int main(int argc, char *argv[]) {
 		best_fp = fp;
 	    }
 	}
+
 	std::cout << best << std::endl;
 	std::cout << best.simplified() << std::endl;
 	std::cout << l << ' ' << d << ' ' << best_e << ' ' << best_fn << ' ' << best_fp << std::endl;

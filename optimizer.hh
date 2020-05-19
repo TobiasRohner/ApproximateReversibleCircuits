@@ -29,15 +29,14 @@ public:
     }
 
     const std::vector<Circuit<Reg_t>>& population() const { return population_; }
-    std::vector<Circuit<Reg_t>>& population() { return population_; }
 
     Circuit<Reg_t> compute_best() const {
 	Circuit<Reg_t> best = population_[0];
 	double best_e = 1;
-	unsigned best_qc = best.simplified().quantum_cost();
+	unsigned best_qc = population_[0].simplified().quantum_cost();
 	for (auto&& circuit : population_) {
 	    const auto simp = circuit.simplified();
-	    auto [e, fn, fp] = simp.errors(Func_t{});
+	    auto [e, fn, fp] = circuit.errors(Func_t{});
 	    if ((e < best_e) || (e == best_e && best_qc > simp.quantum_cost())) {
 		best = circuit;
 		best_e = e;
@@ -98,20 +97,15 @@ private:
 	for (unsigned i = 0 ; i < S_ ; ++i) {
 	    auto [fit, fail] = estimate_fitness(rng, population_.data()+F_*i, F_, ds, b);
 	    new_fails.insert(new_fails.end(), fail.begin(), fail.end());
-	    unsigned best_fitness = fit[0];
-	    unsigned best_quantum_cost = population_[F_*i].simplified().quantum_cost();
-	    size_t best_idx = 0;
-	    for (unsigned idx = 1 ; idx < F_ ; ++idx) {
-		const auto simp = population_[F_*i+idx].simplified();
-		if ((fit[idx] > best_fitness) || (fit[idx] == best_fitness && simp.quantum_cost() < best_quantum_cost)) {
-		    best_idx = idx;
-		    best_fitness = fit[idx];
-		    best_quantum_cost = simp.quantum_cost();
-		}
-	    }
-	    best_idx += F_*i;
+	    const auto best_pos = std::max_element(fit.begin(), fit.end());
+	    const size_t best_idx = F_*i + std::distance(fit.begin(), best_pos);
 	    new_population.push_back(population_[best_idx]);
 	}
+	/*
+	std::sort(new_fails.begin(), new_fails.end());
+	const auto last = std::unique(new_fails.begin(), new_fails.end());
+	new_fails.erase(last, new_fails.end());
+	*/
 	fails_ = new_fails;
 	population_.clear();
 	population_.reserve(S_*F_);
@@ -129,3 +123,4 @@ private:
 
 
 #endif // OPTIMIZER_HH_
+
