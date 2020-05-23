@@ -5,15 +5,14 @@ all: optimization_plots plots_vs_noise
 
 .PHONY: clean
 clean:
-	rm -f optim.out 2of5.txt 4mod5.txt 5mod5.txt 6sym.txt 9sym.txt xor5.txt
-	rm -f optim.out 2of5_??.txt 4mod5_??.txt 5mod5_??.txt 6sym_??.txt 9sym_??.txt xor5_??.txt
-	rm -f optim.out .2of5.txt.dummy .4mod5.txt.dummy .5mod5.txt.dummy .6sym.txt.dummy .9sym.txt.dummy .xor5.txt.dummy
-	rm -f optim.out 2of5.dat 4mod5.dat 5mod5.dat 6sym.dat 9sym.dat xor5.dat
-	rm -f optim.out 2of5.pdf 4mod5.pdf 5mod5.pdf 6sym.pdf 9sym.pdf xor5.pdf
+	rm -f optim.out 2of5_??.txt 4mod5_??.txt 5mod5_??.txt 6sym_??.txt 9sym_??.txt NthPrime?_??.txt xor5_??.txt
+	rm -f optim.out .2of5.txt.dummy .4mod5.txt.dummy .5mod5.txt.dummy .6sym.txt.dummy .9sym.txt.dummy .NthPrime?.txt.dummy .xor5.txt.dummy
+	rm -f optim.out 2of5.dat 4mod5.dat 5mod5.dat 6sym.dat 9sym.dat NthPrime?.dat xor5.dat
+	rm -f optim.out 2of5.pdf 4mod5.pdf 5mod5.pdf 6sym.pdf 9sym.pdf NthPrime?.pdf xor5.pdf
 
 
 .PHONY: optimization_plots
-optimization_plots: 2of5.pdf 4mod5.pdf 5mod5.pdf 6sym.pdf Xor5.pdf
+optimization_plots: 2of5.pdf 4mod5.pdf 5mod5.pdf 6sym.pdf NthPrime3.pdf NthPrime4.pdf Xor5.pdf
 
 
 .PHONY: plots_vs_noise
@@ -49,6 +48,16 @@ optim.out: classical_circuit_optimizer.cc circuit.hh functions.hh instruction.hh
 	touch $@
 
 
+.NthPrime3.txt.dummy: optim.out
+	seq -f "%02g" 1 16 | parallel ./$< -o NthPrime3_{}.txt -f NthPrime3 -l 5 -d 1 -D 20 -i 1 -S 30 -F 50 -b 8 -n 1 -s {}
+	touch $@
+
+
+.NthPrime4.txt.dummy: optim.out
+	seq -f "%02g" 1 16 | parallel ./$< -o NthPrime4_{}.txt -f NthPrime4 -l 6 -d 1 -D 30 -i 1 -S 30 -F 50 -b 16 -n 1 -s {}
+	touch $@
+
+
 .Xor5.txt.dummy: optim.out
 	seq -f "%02g" 1 16 | parallel ./$< -o Xor5_{}.txt -f Xor5 -l 5 -d 1 -D 20 -i 1 -S 60 -F 100 -b 32 -n 1 -s {}
 	touch $@
@@ -74,6 +83,14 @@ optim.out: classical_circuit_optimizer.cc circuit.hh functions.hh instruction.hh
 	./$< 9sym
 
 
+NthPrime3.dat: post_processing.py .NthPrime3.txt.dummy
+	./$< NthPrime3
+
+
+NthPrime4.dat: post_processing.py .NthPrime4.txt.dummy
+	./$< NthPrime4
+
+
 Xor5.dat: post_processing.py .Xor5.txt.dummy
 	./$< Xor5
 
@@ -96,6 +113,14 @@ Xor5.dat: post_processing.py .Xor5.txt.dummy
 
 9sym.pdf: plot.py 9sym.dat
 	./$< 9sym
+
+
+NthPrime3.pdf: plot.py NthPrime3.dat
+	./$< NthPrime3
+
+
+NthPrime4.pdf: plot.py NthPrime4.dat
+	./$< NthPrime4
 
 
 Xor5.pdf: plot.py Xor5.dat
