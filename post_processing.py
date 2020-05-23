@@ -16,6 +16,7 @@ import dill
 
 FNAME = sys.argv[1]
 NOISE_FACTOR = 10
+func = getattr(functions, 'Func'+FNAME)()
 
 
 known_circuits = []
@@ -52,21 +53,21 @@ for fname in os.listdir('known_circuits/'+FNAME):
 parsed = sorted(parsed, key = lambda t: t['qc'])
 
 for p in tqdm.tqdm(parsed, desc='Optimized'):
-    circuit = ascii2qiskit(p['circuit'])
-    e, fn, fp = compute_error_rates(circuit, getattr(functions, 'Func'+FNAME)(), reduce_noise(qc_properties.noise_model, NOISE_FACTOR))
+    circuit = ascii2qiskit(p['circuit'], func.output_size)
+    e, fn, fp = compute_error_rates(circuit, func, reduce_noise(qc_properties.noise_model, NOISE_FACTOR))
     p['e_noise'] = e
     p['fn_noise'] = fn
     p['fp_noise'] = fp
-    e, fn, fp = compute_error_rates(circuit, getattr(functions, 'Func'+FNAME)(), qc_properties.noise_model)
+    e, fn, fp = compute_error_rates(circuit, func, qc_properties.noise_model)
     p['e_noise_melbourne'] = e
     p['fn_noise_melbourne'] = fn
     p['fp_noise_melbourne'] = fp
 for known in tqdm.tqdm(known_circuits, desc='Known'):
-    e, fn, fp = compute_error_rates(known['circuit'], getattr(functions, 'Func'+FNAME)(), reduce_noise(qc_properties.noise_model, NOISE_FACTOR))
+    e, fn, fp = compute_error_rates(known['circuit'], func, reduce_noise(qc_properties.noise_model, NOISE_FACTOR))
     known['e_noise'] = e
     known['fn_noise'] = fn
     known['fp_noise'] = fp
-    e, fn, fp = compute_error_rates(known['circuit'], getattr(functions, 'Func'+FNAME)(), qc_properties.noise_model)
+    e, fn, fp = compute_error_rates(known['circuit'], func, qc_properties.noise_model)
     known['e_noise_melbourne'] = e
     known['fn_noise_melbourne'] = fn
     known['fp_noise_melbourne'] = fp

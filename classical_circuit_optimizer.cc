@@ -76,6 +76,7 @@ int main(int argc, char *argv[]) {
 
     std::ofstream output_file;
     output_file.open(vm["output"].as<std::string>());
+    unsigned output_size;
     for (unsigned d = d_min ; d <= d_max ; d += d_inc) {
 	std::vector<Circuit<Reg_t>> best_per_optim(optimizations_per_circuit);
 	std::vector<std::tuple<double, double, double>> e_per_optim(optimizations_per_circuit);
@@ -86,7 +87,8 @@ int main(int argc, char *argv[]) {
 	    #define DO_OPTIMIZATION(fn) Optimizer<Reg_t, fn, MS_t> optimizer(rngs[tidx], l, d, S, F, mut_strats[tidx]);		\
 					optimizer.optimize(rngs[tidx], 100*d, 0.5, b);						\
 					best_per_optim[i] = optimizer.compute_best();						\
-					e_per_optim[i] = best_per_optim[i].errors(fn{});
+					e_per_optim[i] = best_per_optim[i].errors(fn{});					\
+					output_size = fn::output_size;
 	    const std::string function_name = vm["function"].as<std::string>();
 	    if (function_name == "2of5") {
 		DO_OPTIMIZATION(Func2of5);
@@ -109,6 +111,12 @@ int main(int argc, char *argv[]) {
 	    else if (function_name == "Xor5") {
 		DO_OPTIMIZATION(FuncXor5);
 	    }
+	    else if (function_name == "NthPrime3") {
+		DO_OPTIMIZATION(FuncNthPrime3);
+	    }
+	    else if (function_name == "NthPrime4") {
+		DO_OPTIMIZATION(FuncNthPrime4);
+	    }
 	    else {
 		std::cout << "Unknown function: '" << function_name << "'" << std::endl;
 		exit(1);
@@ -130,11 +138,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	std::cout << best << std::endl;
-	std::cout << best.simplified() << std::endl;
+	std::cout << best.simplified(output_size) << std::endl;
 	std::cout << l << ' ' << d << ' ' << best_e << ' ' << best_fn << ' ' << best_fp << std::endl;
 	// Write the best circuit to the output file
 	best.serialize(output_file);
-	output_file << l << ' ' << d << ' ' << best_e << ' ' << best_fn << ' ' << best_fp << ' ' << best.simplified().quantum_cost() << '\n';
+	output_file << l << ' ' << d << ' ' << best_e << ' ' << best_fn << ' ' << best_fp << ' ' << best.simplified(output_size).quantum_cost() << '\n';
 	best.extend(d_inc);
     }
     

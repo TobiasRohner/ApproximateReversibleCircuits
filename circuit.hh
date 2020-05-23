@@ -4,6 +4,7 @@
 #include <climits>
 #include <cstdint>
 #include <cassert>
+#include <cmath>
 #include <vector>
 #include <iostream>
 #include <tuple>
@@ -49,7 +50,6 @@ public:
 
     template<typename Func_t>
     std::tuple<double, double, double> errors(const Func_t& func) const {
-	assert(func.output_size == 1);
 	// Test the circuit with every possible input
 	const Reg_t input_count = Reg_t(1) << func.input_size;
 	std::vector<Reg_t> inputs(input_count);
@@ -64,21 +64,23 @@ public:
 	double fp = 0;
 	for (size_t i = 0 ; i < input_count ; ++i) {
 	    const Reg_t in = inputs[i];
-	    const Reg_t out = (outputs[i] >> (l_-1)) & 1;
+	    const Reg_t out = (outputs[i] >> (l_-Func_t::output_size)) & ((Reg_t(1) << Func_t::output_size)-1);
 	    const Reg_t exact = func.func_eval(in);
-	    if (exact == 1)
-		++num_positive;
-	    if (out != exact) {
-		++e;
-		if (exact == 0 && out == 1)
-		    ++fp;
-		else
-		    ++fn;
+	    for (int bit = 0 ; bit < Func_t::output_size ; ++bit) {
+		if (((exact>>bit)&1) == 1)
+		    ++num_positive;
+		if (((out>>bit)&1) != ((exact>>bit)&1)) {
+		    ++e;
+		    if (((exact>>bit)&1) == 0 && ((out>>bit)&1) == 1)
+			++fp;
+		    else
+			++fn;
+		}
 	    }
 	}
-	e /= inputs.size();
+	e /= Func_t::output_size * inputs.size();
 	fn /= num_positive;
-	fp /= inputs.size() - num_positive;
+	fp /= Func_t::output_size*inputs.size() - num_positive;
 	return {e, fn, fp};
     }
 
@@ -99,10 +101,10 @@ public:
 	return circuit;
     }
 
-    Circuit<Reg_t> simplified() const {
+    Circuit<Reg_t> simplified(unsigned output_size=1) const {
 	Circuit<Reg_t> simp = *this;
 	simp.remove_identity();
-	simp.remove_unnecessary_gates();
+	simp.remove_unnecessary_gates(output_size);
 	return simp;
     }
 
@@ -119,8 +121,8 @@ private:
 		    end(inst_));
     }
 
-    int last_unnecessary_gate() const {
-	Reg_t unused_bits = Reg_t(1) << (l_-1);
+    int last_unnecessary_gate(unsigned output_size) const {
+	Reg_t unused_bits = ((Reg_t(1)<<output_size)-1) << (l_-output_size);
 	int idx;
 	for (idx = d()-1 ; idx >= 0 ; --idx) {
 	    const auto args = inst_[idx].args();
@@ -162,11 +164,11 @@ private:
 	return idx;
     }
 
-    void remove_unnecessary_gates() {
-	int idx = last_unnecessary_gate();
+    void remove_unnecessary_gates(unsigned output_size=1) {
+	int idx = last_unnecessary_gate(output_size);
 	while (idx >= 0) {
 	    inst_.erase(begin(inst_)+idx);
-	    idx = last_unnecessary_gate();
+	    idx = last_unnecessary_gate(output_size);
 	}
     }
 };

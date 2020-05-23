@@ -25,15 +25,16 @@ def compute_error_rates(qc, function, noise_model=qc_properties.noise_model):
                                    noise_model=noise_model))
     simulated_results = [job.result().get_counts() for job in jobs]
     exact_results = [function(inp) for inp in range(2**function.input_size)]
-    num_positive = sum(exact_results)
+    num_positive = sum([bin(ex).count('1') for ex in exact_results])
     for simulated, exact in zip(simulated_results, exact_results):
-        correct_cnt = simulated.get(str(exact), 0)
-        e += shots - correct_cnt
-        if exact == 0:
-            fp += shots - correct_cnt
-        else:
-            fn += shots - correct_cnt
-    e /= shots * 2**function.input_size
+        for bit in range(function.output_size):
+            correct_cnt = sum([v if k.rjust(function.output_size, '0')[bit]==bin(exact)[2:].rjust(function.output_size, '0')[bit] else 0 for k,v in simulated.items()])
+            e += shots - correct_cnt
+            if bin(exact)[2:].rjust(function.output_size, '0')[bit] == 0:
+                fp += shots - correct_cnt
+            else:
+                fn += shots - correct_cnt
+    e /= shots * 2**function.input_size * function.output_size
     fn /= shots * num_positive
     fp /= shots * (2**function.input_size - num_positive)
     return e, fn, fp

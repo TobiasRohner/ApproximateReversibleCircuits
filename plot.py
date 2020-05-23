@@ -46,7 +46,7 @@ plt.errorbar([qc+0.05 for qc in errors],
 plt.errorbar([d['qc'] for d in known_circuits if d['qc'] <= max(errors)],
              [d['e_noise'] for d in known_circuits if d['qc'] <= max(errors)],
              [0 for d in known_circuits if d['qc'] <= max(errors)],
-             elinewidth=0.001, fmt='x', label='Known circuits')
+             elinewidth=0.001, fmt='x', label='Known exact circuits')
 plt.xlabel('Quantum Cost')
 plt.ylabel('Error rate')
 plt.legend()
@@ -58,7 +58,7 @@ plt.plot([qc for qc in errors], [errors[qc]['median_without_noise'] for qc in er
 plt.fill_between([qc for qc in errors], [errors[qc]['min_without_noise'] for qc in errors], [errors[qc]['max_without_noise'] for qc in errors], alpha=0.2)
 plt.plot([qc for qc in errors], [errors[qc]['median_with_noise'] for qc in errors], label='Errors with noise')
 plt.fill_between([qc for qc in errors], [errors[qc]['min_with_noise'] for qc in errors], [errors[qc]['max_with_noise'] for qc in errors], alpha=0.2)
-plt.scatter([d['qc'] for d in known_circuits if d['qc'] <= max(errors)], [d['e_noise'] for d in known_circuits if d['qc'] <= max(errors)], label='Known circuits')
+plt.scatter([d['qc'] for d in known_circuits if d['qc'] <= max(errors)], [d['e_noise'] for d in known_circuits if d['qc'] <= max(errors)], label='Known exact circuits')
 plt.xlabel('Quantum Cost')
 plt.ylabel('Error rate')
 plt.legend()
@@ -77,7 +77,7 @@ plt.errorbar([qc+0.05 for qc in errors],
 plt.errorbar([d['qc'] for d in known_circuits if d['qc'] <= max(errors)],
              [d['e_noise_melbourne'] for d in known_circuits if d['qc'] <= max(errors)],
              [0 for d in known_circuits if d['qc'] <= max(errors)],
-             elinewidth=0.001, fmt='x', label='Known circuits')
+             elinewidth=0.001, fmt='x', label='Known exact circuits')
 plt.xlabel('Quantum Cost')
 plt.ylabel('Error rate')
 plt.legend()
@@ -89,7 +89,7 @@ plt.plot([qc for qc in errors], [errors[qc]['median_without_noise'] for qc in er
 plt.fill_between([qc for qc in errors], [errors[qc]['min_without_noise'] for qc in errors], [errors[qc]['max_without_noise'] for qc in errors], alpha=0.2)
 plt.plot([qc for qc in errors], [errors[qc]['median_with_noise_melbourne'] for qc in errors], label='Errors with noise')
 plt.fill_between([qc for qc in errors], [errors[qc]['min_with_noise_melbourne'] for qc in errors], [errors[qc]['max_with_noise_melbourne'] for qc in errors], alpha=0.2)
-plt.scatter([d['qc'] for d in known_circuits if d['qc'] <= max(errors)], [d['e_noise_melbourne'] for d in known_circuits if d['qc'] <= max(errors)], label='Known circuits')
+plt.scatter([d['qc'] for d in known_circuits if d['qc'] <= max(errors)], [d['e_noise_melbourne'] for d in known_circuits if d['qc'] <= max(errors)], label='Known exact circuits')
 plt.xlabel('Quantum Cost')
 plt.ylabel('Error rate')
 plt.legend()

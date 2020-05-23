@@ -82,10 +82,10 @@ def tfc2qiskit(source):
     return quantum_cost, circuit
 
 
-def ascii2qiskit(source):
+def ascii2qiskit(source, output_size=1):
     lines = source.splitlines()
     num_lines = int(lines[0].split()[0])
-    circuit = qiskit.circuit.QuantumCircuit(num_lines, 1)
+    circuit = qiskit.circuit.QuantumCircuit(num_lines, output_size)
     for instruction in lines[1:]:
         gate = instruction.split()[0]
         args = list(map(int, instruction.split()[1:]))
@@ -104,5 +104,5 @@ def ascii2qiskit(source):
         else:
             pass
     circuit.barrier(range(num_lines))
-    circuit.measure([num_lines-1], [0])
+    circuit.measure(range(num_lines-output_size, num_lines), range(output_size))
     return circuit

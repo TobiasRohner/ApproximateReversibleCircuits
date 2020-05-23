@@ -73,4 +73,26 @@ struct FuncXor5 {
 };
 
 
+struct FuncNthPrime4 {
+    static constexpr unsigned input_size = 4;
+    static constexpr unsigned output_size = 6;
+
+    template<typename Reg_t>
+    static Reg_t func_eval(Reg_t reg) { return primes[reg]; }
+
+    constexpr static int primes[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
+};
+
+
+struct FuncNthPrime3 {
+    static constexpr unsigned input_size = 3;
+    static constexpr unsigned output_size = 5;
+
+    template<typename Reg_t>
+    static Reg_t func_eval(Reg_t reg) { return primes[reg]; }
+
+    constexpr static int primes[] = {2, 3, 5, 7, 11, 13, 17, 19};
+};
+
+
 #endif // FUNCTIONS_HH_

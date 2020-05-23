@@ -33,9 +33,9 @@ public:
     Circuit<Reg_t> compute_best() const {
 	Circuit<Reg_t> best = population_[0];
 	double best_e = 1;
-	unsigned best_qc = population_[0].simplified().quantum_cost();
+	unsigned best_qc = population_[0].simplified(Func_t::output_size).quantum_cost();
 	for (auto&& circuit : population_) {
-	    const auto simp = circuit.simplified();
+	    const auto simp = circuit.simplified(Func_t::output_size);
 	    auto [e, fn, fp] = circuit.errors(Func_t{});
 	    if ((e < best_e) || (e == best_e && best_qc > simp.quantum_cost())) {
 		best = circuit;
@@ -79,12 +79,16 @@ private:
 	    outputs = inputs;
 	    circuits[i].run(outputs);
 	    for (unsigned k = 0 ; k < b ; ++k) {
-		if (((outputs[k] >> (l_-1)) & 1) == func_eval(inputs[k]))
-		    fitness[i] += 1;
-		else
-		    new_fails.push_back(inputs[k]);
+		const Reg_t out = (outputs[k] >> (l_-Func_t::output_size)) & ((Reg_t(1) << Func_t::output_size) - 1);
+		const Reg_t exact = func_eval(inputs[k]);
+		for (int bit = 0 ; bit < Func_t::output_size ; ++bit) {
+		    if (((out>>bit)&1) == ((exact>>bit)&1))
+			fitness[i] += 1;
+		    else
+			new_fails.push_back(inputs[k]);
+		}
 	    }
-	    fitness[i] /= b;
+	    fitness[i] /= Func_t::output_size * b;
 	}
 	return {std::move(fitness), std::move(new_fails)};
     }
