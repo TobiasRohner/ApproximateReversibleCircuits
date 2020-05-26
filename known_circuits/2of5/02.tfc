@@ -1,0 +1,22 @@
+107
+.v a,b,c,d,e,f
+.i a,b,c,d,e
+.o f
+.c 1
+BEGIN
+t1 d
+t4 a,d,e,c
+t1 b
+t4 b,c,d,f
+t1 a
+t1 b
+t1 d
+t1 e
+t4 a,c,e,f
+t5 a,b,d,e,f
+t3 a,f,e
+t1 c
+t1 f
+t4 c,d,e,f
+t4 b,c,e,f
+END

@@ -1,0 +1,25 @@
+158
+.v a,b,c,d,e,f
+.i a,b,c,d,e
+.o f
+.c 1
+BEGIN
+t1 d
+t5 a,d,e,f,c
+t1 b
+t4 b,c,d,f
+t1 a
+t1 b
+t1 d
+t1 e
+t4 a,c,e,f
+t5 a,b,d,e,f
+t3 a,f,e
+t1 b
+t1 c
+t1 f
+t5 b,c,d,e,f
+t1 b
+t1 d
+t5 b,c,d,e,f
+END
